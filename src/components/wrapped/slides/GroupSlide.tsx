@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SlideProps } from '@/types/wrapped';
+import { CLANS } from '@/lib/clans';
 
-const GROUPS = [
-  "Ship It Society",
-  "Night Owls",
-  "Hardware Hackers",
-  "Open Source Oracles",
-  "Game Jammers",
-  "Design Dynamos",
-  "System Architects",
-  "Cyber Sentinels"
-];
+const GROUPS = CLANS.map(c => c.name);
 
 export default function GroupSlide({ data }: SlideProps) {
   const [displayedGroup, setDisplayedGroup] = useState(GROUPS[0]);

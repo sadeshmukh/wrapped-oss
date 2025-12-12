@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { WrappedData } from '@/types/wrapped';
 import { Client, Databases, Query } from 'node-appwrite';
 import { getUserData } from '@/lib/waitlist';
+import { getUserClan } from '@/lib/clans';
 
 async function slackFetch(endpoint: string, token: string, params: Record<string, string> = {}) {
   const url = new URL(`https://slack.com/api/${endpoint}`);
@@ -144,7 +145,7 @@ export async function GET() {
       ySwsSubmissions,
       ySwsProjects,
       hackatimeHours,
-      randomGroup: "Hack Clubbers"
+      randomGroup: getUserClan(userId).name
     };
 
     return NextResponse.json({ ...data, requiresGithub });

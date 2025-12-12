@@ -1,3 +1,5 @@
+import { Clan } from '@/lib/clans';
+
 export interface WrappedData {
   userName: string;
   totalMessages: number;
@@ -9,7 +11,7 @@ export interface WrappedData {
   ySwsSubmissions: number;
   ySwsProjects: string[];
   hackatimeHours: number;
-  randomGroup: string;
+  randomGroup: Clan['name'];
 }
 
 export interface SlideProps {

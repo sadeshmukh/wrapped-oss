@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Wrapped",
-  description: "Your year in Hack Club.",
+  description: "Your year in Hack Club, 2025 edition.",
 };
 
 export default function RootLayout({
