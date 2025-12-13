@@ -1,17 +1,35 @@
 import { getNextUserToProcess, markUserProcessed, isProcessingActive, setProcessing } from '@/lib/waitlist';
 import { getAllSlackTokens } from '@/lib/slack-tokens';
 
-async function slackFetch(endpoint: string, token: string, params: Record<string, string> = {}) {
+async function slackFetch(endpoint: string, token: string, params: Record<string, string> = {}, retries = 100) {
   const url = new URL(`https://slack.com/api/${endpoint}`);
   Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
 
-  const res = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  return res.json();
+      const data = await res.json();
+
+      if (!data.ok && data.error === 'ratelimited') {
+        const retryAfter = parseInt(res.headers.get('Retry-After') || '1', 10);
+        console.warn(`Rate limited on ${endpoint}. Retrying after ${retryAfter}s... (Attempt ${i + 1}/${retries})`);
+        await new Promise(resolve => setTimeout(resolve, (retryAfter + 1) * 1000));
+        continue;
+      }
+
+      return data;
+    } catch (e) {
+      console.error(`Fetch error on ${endpoint}:`, e);
+      if (i === retries - 1) throw e;
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+    }
+  }
+  return { ok: false, error: 'max_retries_exceeded' };
 }
 
 function getNextTokenFromList(tokens: string[], currentIndex: { val: number }): string {
@@ -170,25 +188,34 @@ async function processUser(
     console.log(`User ${userId} top DMs:`, topDms);
 
     // Fetch additional stats using rotated tokens
+    console.log(`Fetching total messages for ${slackUserId}`);
     const totalRes = await slackFetch('search.messages', userToken, { 
         query: `from:<@${slackUserId}>`, 
         count: '1' 
     });
+    if (!totalRes.ok) console.error(`Total messages fetch failed for ${slackUserId}:`, totalRes.error);
+    else console.log(`Total messages for ${slackUserId}: ${totalRes.messages?.total}`);
     
+    console.log(`Fetching confessions for ${slackUserId}`);
     const confessionsRes = await slackFetch('search.messages', getNextTokenFromList(publicTokens, publicTokenIndex), {
         query: `from:<@${slackUserId}> in:confessions`,
         count: '1'
     });
+    if (!confessionsRes.ok) console.error(`Confessions fetch failed for ${slackUserId}:`, confessionsRes.error);
 
+    console.log(`Fetching meta for ${slackUserId}`);
     const metaRes = await slackFetch('search.messages', getNextTokenFromList(publicTokens, publicTokenIndex), {
         query: `from:<@${slackUserId}> in:meta`,
         count: '1'
     });
+    if (!metaRes.ok) console.error(`Meta fetch failed for ${slackUserId}:`, metaRes.error);
 
+    console.log(`Fetching prox2 for ${slackUserId}`);
     const prox2Res = await slackFetch('search.messages', userToken, {
         query: `from:<@${slackUserId}> to:<@U023L3A4UKX>`,
         count: '1'
     });
+    if (!prox2Res.ok) console.error(`Prox2 fetch failed for ${slackUserId}:`, prox2Res.error);
 
     const totalMessages = totalRes.ok ? totalRes.messages.total : 0;
     const confessionsMessages = confessionsRes.ok ? confessionsRes.messages.total : 0;
