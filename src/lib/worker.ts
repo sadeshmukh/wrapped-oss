@@ -199,6 +199,7 @@ async function processUser(
       .map((channel, index) => ({ name: channel.name, rank: index + 1 }));
 
     const topDms = await Promise.all(dmStats
+      .filter(dm => dm.userId !== slackUserId)
       .sort((a, b) => b.count - a.count)
       .slice(0, 5)
       .map(async (dm) => {
@@ -229,14 +230,14 @@ async function processUser(
     else console.log(`Total messages for ${slackUserId}: ${totalRes.messages?.total}`);
     
     console.log(`Fetching confessions for ${slackUserId}`);
-    const confessionsRes = await slackFetch('search.messages', getNextTokenFromList(publicTokens, publicTokenIndex), {
+    const confessionsRes = await slackFetch('search.messages', userToken, {
         query: `from:<@${slackUserId}> in:confessions`,
         count: '1'
     });
     if (!confessionsRes.ok) console.error(`Confessions fetch failed for ${slackUserId}:`, confessionsRes.error);
 
     console.log(`Fetching meta for ${slackUserId}`);
-    const metaRes = await slackFetch('search.messages', getNextTokenFromList(publicTokens, publicTokenIndex), {
+    const metaRes = await slackFetch('search.messages', userToken, {
         query: `from:<@${slackUserId}> in:meta`,
         count: '1'
     });
