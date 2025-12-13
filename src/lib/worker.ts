@@ -9,6 +9,10 @@ async function slackFetch(endpoint: string, initialToken: string, params: Record
   const isUserToken = initialToken.startsWith('xoxp');
   const availableTokens = (isUserToken ? [initialToken] : [...botTokens, initialToken])
     .filter((t, i, self) => self.indexOf(t) === i && t);
+
+  if (availableTokens.length === 0 && initialToken) {
+    availableTokens.push(initialToken);
+  }
   
   let currentTokenIndex = 0;
 
