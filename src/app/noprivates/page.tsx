@@ -32,6 +32,8 @@ export default function NoPrivatesHome() {
   const [showGithubInput, setShowGithubInput] = useState(false);
   const [githubUsername, setGithubUsername] = useState('');
   const [onWaitlist, setOnWaitlist] = useState(false);
+  const [waitlistPosition, setWaitlistPosition] = useState<number | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     async function checkStatus() {
@@ -50,12 +52,23 @@ export default function NoPrivatesHome() {
           } else {
             setData(data);
           }
-        } else {
-            const waitlistRes = await fetch('/api/waitlist', { method: 'POST' });
-            if (waitlistRes.ok) {
+        } else if (res.status === 404) {
+            const errorData = await res.json();
+            if (errorData.waitlist) {
                 setOnWaitlist(true);
+                if (errorData.waitlist.status === 'processing') {
+                    setIsProcessing(true);
+                } else {
+                    setWaitlistPosition(errorData.waitlist.position);
+                }
             } else {
-                setError('Failed to load data');
+                const waitlistRes = await fetch('/api/waitlist', { method: 'POST' });
+                if (waitlistRes.ok) {
+                    setOnWaitlist(true);
+                    window.location.reload();
+                } else {
+                    setError('Failed to load data');
+                }
             }
         }
       } catch (err) {
@@ -124,10 +137,25 @@ export default function NoPrivatesHome() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-wrapped-black text-wrapped-cream p-4">
         <div className="text-center max-w-md">
-          <h1 className="text-5xl font-black mb-6 tracking-tighter">⏳</h1>
-          <h2 className="text-4xl font-black mb-4 tracking-tighter">You're on the list!</h2>
+          <h1 className="text-5xl font-black mb-6 tracking-tighter">
+            {isProcessing ? '⚙️' : '⏳'}
+          </h1>
+          <h2 className="text-4xl font-black mb-4 tracking-tighter">
+            {isProcessing ? 'Crunching the numbers...' : "You're on the list!"}
+          </h2>
+          
+          {!isProcessing && waitlistPosition !== null && (
+             <div className="bg-white/10 rounded-xl p-4 mb-6">
+                <p className="text-sm uppercase tracking-widest opacity-70 mb-1">Your Position</p>
+                <p className="text-4xl font-black">{waitlistPosition}</p>
+             </div>
+          )}
+
           <p className="text-xl opacity-80 mb-8">
-            We'll get your wrapped ready (Privacy Mode) and try to let you know in Slack once it's done! Please check back later :3
+            {isProcessing 
+                ? "We're generating your wrapped right now! This shouldn't take long."
+                : "We'll get your wrapped ready (Privacy Mode) and try to let you know in Slack once it's done! Please check back later :3"
+            }
           </p>
           <p className="text-sm opacity-60">
             This might take a few minutes to a few hours depending on demand.

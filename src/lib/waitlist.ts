@@ -157,6 +157,44 @@ export async function markUserProcessed(userId: string, results?: any): Promise<
     }
 }
 
+export async function getUserPosition(userId: string): Promise<{ position: number; status: string } | null> {
+    try {
+        const userRes = await databases.listDocuments(
+            DB_ID,
+            COLLECTION_ID,
+            [Query.equal('userId', userId)]
+        );
+
+        if (userRes.documents.length === 0) return null;
+        const userDoc = userRes.documents[0];
+
+        if (userDoc.status === 'processing') {
+            return { position: 0, status: 'processing' };
+        }
+        
+        if (userDoc.status === 'completed') {
+            return { position: 0, status: 'completed' };
+        }
+
+        if (userDoc.status === 'pending') {
+            const aheadRes = await databases.listDocuments(
+                DB_ID,
+                COLLECTION_ID,
+                [
+                    Query.equal('status', 'pending'),
+                    Query.lessThan('addedAt', userDoc.addedAt)
+                ]
+            );
+            return { position: aheadRes.total + 1, status: 'pending' };
+        }
+
+        return { position: -1, status: userDoc.status };
+    } catch (e) {
+        console.error('Error getting user position', e);
+        return null;
+    }
+}
+
 export async function getUserData(userId: string): Promise<any | null> {
     try {
         console.log(`[getUserData] Querying for userId: ${userId}`);
