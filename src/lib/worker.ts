@@ -1,33 +1,51 @@
 import { getNextUserToProcess, markUserProcessed, isProcessingActive, setProcessing } from '@/lib/waitlist';
 import { getAllSlackTokens } from '@/lib/slack-tokens';
 
-async function slackFetch(endpoint: string, token: string, params: Record<string, string> = {}, retries = 100) {
+async function slackFetch(endpoint: string, initialToken: string, params: Record<string, string> = {}, retries = 100) {
   const url = new URL(`https://slack.com/api/${endpoint}`);
   Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
 
+  const botTokens = getAllSlackTokens();
+  const isUserToken = initialToken.startsWith('xoxp');
+  const availableTokens = isUserToken ? [initialToken] : [...botTokens, initialToken].filter((t, i, self) => self.indexOf(t) === i && t);
+  
+  let currentTokenIndex = 0;
+
   for (let i = 0; i < retries; i++) {
-    try {
-      const res = await fetch(url.toString(), {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    for (let j = 0; j < availableTokens.length; j++) {
+        const tokenToUse = availableTokens[(currentTokenIndex + j) % availableTokens.length];
+        
+        try {
+            const res = await fetch(url.toString(), {
+                headers: {
+                Authorization: `Bearer ${tokenToUse}`,
+                },
+            });
 
-      const data = await res.json();
+            const data = await res.json();
 
-      if (!data.ok && data.error === 'ratelimited') {
-        const retryAfter = parseInt(res.headers.get('Retry-After') || '1', 10);
-        console.warn(`Rate limited on ${endpoint}. Retrying after ${retryAfter}s... (Attempt ${i + 1}/${retries})`);
-        await new Promise(resolve => setTimeout(resolve, (retryAfter + 1) * 1000));
-        continue;
-      }
+            if (!data.ok) {
+                if (data.error === 'ratelimited') {
+                    if (j === availableTokens.length - 1) {
+                        const retryAfter = parseInt(res.headers.get('Retry-After') || '1', 10);
+                        console.warn(`Rate limited on ${endpoint} with all tokens. Retrying after ${retryAfter}s... (Attempt ${i + 1}/${retries})`);
+                        await new Promise(resolve => setTimeout(resolve, (retryAfter + 1) * 1000));
+                    }
+                    continue;
+                }
+                console.warn(`API error on ${endpoint} with token ending in ...${tokenToUse.slice(-4)}: ${data.error}`);
+                continue;
+            }
 
-      return data;
-    } catch (e) {
-      console.error(`Fetch error on ${endpoint}:`, e);
-      if (i === retries - 1) throw e;
-      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+            return data;
+        } catch (e) {
+            console.error(`Fetch error on ${endpoint}:`, e);
+            if (i === retries - 1 && j === availableTokens.length - 1) throw e;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
     }
+    
+    await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
   }
   return { ok: false, error: 'max_retries_exceeded' };
 }
@@ -187,7 +205,6 @@ async function processUser(
     console.log(`User ${userId} top channels:`, topChannels);
     console.log(`User ${userId} top DMs:`, topDms);
 
-    // Fetch additional stats using rotated tokens
     console.log(`Fetching total messages for ${slackUserId}`);
     const totalRes = await slackFetch('search.messages', userToken, { 
         query: `from:<@${slackUserId}>`, 
