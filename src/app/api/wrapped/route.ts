@@ -50,35 +50,53 @@ export async function GET() {
     if (!userRes.ok) throw new Error(`User fetch failed: ${userRes.error}`);
     const userName = userRes.user.real_name || userRes.user.name;
 
-    const searchRes = await slackFetch('search.messages', token, { 
-      query: `from:<@${userId}>`, 
-      count: '1' 
-    });
-    
-    const totalMessages = searchRes.ok ? searchRes.messages.total : 0;
+    let totalMessages = 0;
+    if (storedData && storedData.totalMessages !== undefined) {
+        totalMessages = storedData.totalMessages;
+    } else {
+        const searchRes = await slackFetch('search.messages', token, { 
+          query: `from:<@${userId}>`, 
+          count: '1' 
+        });
+        totalMessages = searchRes.ok ? searchRes.messages.total : 0;
+    }
 
     if (topChannels.length === 0) {
       topChannels.push({ name: "general", rank: 1 });
     }
 
- 
-    const confessionsRes = await slackFetch('search.messages', token, {
-      query: `from:<@${userId}> in:confessions`,
-      count: '1'
-    });
-    const confessionsMessages = confessionsRes.ok ? confessionsRes.messages.total : 0;
+    let confessionsMessages = 0;
+    if (storedData && storedData.confessionsMessages !== undefined) {
+        confessionsMessages = storedData.confessionsMessages;
+    } else {
+        const confessionsRes = await slackFetch('search.messages', token, {
+          query: `from:<@${userId}> in:confessions`,
+          count: '1'
+        });
+        confessionsMessages = confessionsRes.ok ? confessionsRes.messages.total : 0;
+    }
 
-    const metaRes = await slackFetch('search.messages', token, {
-      query: `from:<@${userId}> in:meta`,
-      count: '1'
-    });
-    const metaMessages = metaRes.ok ? metaRes.messages.total : 0;
+    let metaMessages = 0;
+    if (storedData && storedData.metaMessages !== undefined) {
+        metaMessages = storedData.metaMessages;
+    } else {
+        const metaRes = await slackFetch('search.messages', token, {
+          query: `from:<@${userId}> in:meta`,
+          count: '1'
+        });
+        metaMessages = metaRes.ok ? metaRes.messages.total : 0;
+    }
 
-    const prox2Res = await slackFetch('search.messages', token, {
-      query: `from:<@${userId}> to:<@U023L3A4UKX>`,
-      count: '1'
-    });
-    const prox2Messages = prox2Res.ok ? prox2Res.messages.total : 0;
+    let prox2Messages = 0;
+    if (storedData && storedData.prox2Messages !== undefined) {
+        prox2Messages = storedData.prox2Messages;
+    } else {
+        const prox2Res = await slackFetch('search.messages', token, {
+          query: `from:<@${userId}> to:<@U023L3A4UKX>`,
+          count: '1'
+        });
+        prox2Messages = prox2Res.ok ? prox2Res.messages.total : 0;
+    }
 
     let hackatimeHours = 0;
     try {

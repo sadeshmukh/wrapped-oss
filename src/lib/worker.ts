@@ -169,6 +169,32 @@ async function processUser(
     console.log(`User ${userId} top channels:`, topChannels);
     console.log(`User ${userId} top DMs:`, topDms);
 
+    // Fetch additional stats using rotated tokens
+    const totalRes = await slackFetch('search.messages', userToken, { 
+        query: `from:<@${slackUserId}>`, 
+        count: '1' 
+    });
+    
+    const confessionsRes = await slackFetch('search.messages', getNextTokenFromList(publicTokens, publicTokenIndex), {
+        query: `from:<@${slackUserId}> in:confessions`,
+        count: '1'
+    });
+
+    const metaRes = await slackFetch('search.messages', getNextTokenFromList(publicTokens, publicTokenIndex), {
+        query: `from:<@${slackUserId}> in:meta`,
+        count: '1'
+    });
+
+    const prox2Res = await slackFetch('search.messages', userToken, {
+        query: `from:<@${slackUserId}> to:<@U023L3A4UKX>`,
+        count: '1'
+    });
+
+    const totalMessages = totalRes.ok ? totalRes.messages.total : 0;
+    const confessionsMessages = confessionsRes.ok ? confessionsRes.messages.total : 0;
+    const metaMessages = metaRes.ok ? metaRes.messages.total : 0;
+    const prox2Messages = prox2Res.ok ? prox2Res.messages.total : 0;
+
     const dmSenderToken = botTokens.length > 0 ? botTokens[0] : userToken;
     
     const dmRes = await slackFetch('conversations.open', dmSenderToken, {
@@ -191,7 +217,15 @@ async function processUser(
         console.error('Failed to open DM channel:', dmRes.error);
     }
 
-    return { success: true, channels: topChannels, dms: topDms };
+    return { 
+        success: true, 
+        channels: topChannels, 
+        dms: topDms,
+        totalMessages,
+        confessionsMessages,
+        metaMessages,
+        prox2Messages
+    };
   } catch (error) {
     console.error(`Error processing user ${userId}:`, error);
     return { success: false, error: String(error) };
@@ -213,7 +247,11 @@ export async function processWaitlist() {
       
       await markUserProcessed(user.userId, result.success ? { 
           topChannels: result.channels,
-          topDms: result.dms 
+          topDms: result.dms,
+          totalMessages: result.totalMessages,
+          confessionsMessages: result.confessionsMessages,
+          metaMessages: result.metaMessages,
+          prox2Messages: result.prox2Messages
       } : undefined);
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
