@@ -93,16 +93,20 @@ type SearchResult = ChannelStat | DmStat | { type: 'skip' | 'error' };
 async function processUser(
   userId: string,
   slackUserId: string,
-  userToken: string
+  userToken: string,
+  mode: 'default' | 'noprivates' = 'default'
 ): Promise<any> {
   try {
-    console.log(`Processing user ${userId}...`);
+    console.log(`Processing user ${userId} (mode: ${mode})...`);
 
     const botTokens = getAllSlackTokens();
     const publicTokens = [...botTokens, userToken].filter(Boolean);
     const publicTokenIndex = { val: 0 };
+    
+    const types = mode === 'noprivates' ? 'public_channel' : 'public_channel,private_channel,im';
+    
     const conversationsRes = await slackFetch('users.conversations', userToken, {
-      types: 'public_channel,private_channel,im',
+      types,
       limit: '200',
       exclude_archived: 'true',
     });
@@ -114,7 +118,7 @@ async function processUser(
     while (nextCursor) {
         console.log(`Fetching more channels... cursor: ${nextCursor}`);
         const nextRes = await slackFetch('users.conversations', userToken, {
-            types: 'public_channel,private_channel,im',
+            types,
             limit: '200',
             exclude_archived: 'true',
             cursor: nextCursor
@@ -247,17 +251,20 @@ async function processUser(
     });
     if (!metaRes.ok) console.error(`Meta fetch failed for ${slackUserId}:`, metaRes.error);
 
-    console.log(`Fetching prox2 for ${slackUserId}`);
-    const prox2Res = await slackFetch('search.messages', userToken, {
-        query: `from:<@${slackUserId}> to:<@U023L3A4UKX>`,
-        count: '1'
-    });
-    if (!prox2Res.ok) console.error(`Prox2 fetch failed for ${slackUserId}:`, prox2Res.error);
+    let prox2Messages = 0;
+    if (mode !== 'noprivates') {
+        console.log(`Fetching prox2 for ${slackUserId}`);
+        const prox2Res = await slackFetch('search.messages', userToken, {
+            query: `from:<@${slackUserId}> to:<@U023L3A4UKX>`,
+            count: '1'
+        });
+        if (!prox2Res.ok) console.error(`Prox2 fetch failed for ${slackUserId}:`, prox2Res.error);
+        prox2Messages = prox2Res.ok ? prox2Res.messages.total : 0;
+    }
 
     const totalMessages = totalRes.ok ? totalRes.messages.total : 0;
     const confessionsMessages = confessionsRes.ok ? confessionsRes.messages.total : 0;
     const metaMessages = metaRes.ok ? metaRes.messages.total : 0;
-    const prox2Messages = prox2Res.ok ? prox2Res.messages.total : 0;
 
     const dmSenderToken = botTokens.length > 0 ? botTokens[0] : userToken;
     
@@ -330,7 +337,7 @@ export async function processWaitlist() {
             }
 
             console.log(`Worker ${workerId} processing user: ${user.userId}`);
-            const result = await processUser(user.userId, user.slackUserId, user.token);
+            const result = await processUser(user.userId, user.slackUserId, user.token, user.mode);
             
             await markUserProcessed(user.userId, result.success ? { 
                 topChannels: result.channels,

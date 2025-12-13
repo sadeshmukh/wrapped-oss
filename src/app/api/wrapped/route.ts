@@ -22,6 +22,7 @@ export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get('slack_token')?.value;
   const userId = cookieStore.get('slack_user_id')?.value;
+  const isNoPrivates = cookieStore.get('slack_noprivates')?.value === 'true';
 
   if (!token || !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -90,7 +91,7 @@ export async function GET() {
     let prox2Messages = 0;
     if (storedData && storedData.prox2Messages !== undefined) {
         prox2Messages = storedData.prox2Messages;
-    } else {
+    } else if (!isNoPrivates) {
         const prox2Res = await slackFetch('search.messages', token, {
           query: `from:<@${userId}> to:<@U023L3A4UKX>`,
           count: '1'

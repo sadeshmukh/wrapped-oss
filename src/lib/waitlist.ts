@@ -15,7 +15,8 @@ let isProcessing = false;
 export async function addToWaitlist(
   userId: string,
   slackUserId: string,
-  token: string
+  token: string,
+  mode: 'default' | 'noprivates' = 'default'
 ): Promise<void> {
   try {
       const existing = await databases.listDocuments(
@@ -37,7 +38,8 @@ export async function addToWaitlist(
             slackUserId,
             token,
             status: 'pending',
-            addedAt: new Date().toISOString()
+            addedAt: new Date().toISOString(),
+            mode
         }
       );
   } catch (error) {
@@ -89,6 +91,7 @@ export async function getNextUserToProcess(): Promise<{
   userId: string;
   slackUserId: string;
   token: string;
+  mode?: 'default' | 'noprivates';
 } | null> {
     try {
         const res = await databases.listDocuments(
@@ -116,6 +119,7 @@ export async function getNextUserToProcess(): Promise<{
             userId: doc.userId,
             slackUserId: doc.slackUserId,
             token: doc.token,
+            mode: doc.mode || 'default',
         };
     } catch (e) {
         console.error('Error getting next user', e);
