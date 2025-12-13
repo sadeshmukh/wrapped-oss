@@ -22,6 +22,10 @@ export async function POST() {
 }
 
 export async function GET() {
+  if (!isProcessingActive()) {
+      processWaitlist().catch(err => console.error('Background processing error:', err));
+  }
+
   return NextResponse.json({
     queueSize: await getQueueSize(),
     processing: isProcessingActive(),

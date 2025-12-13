@@ -67,6 +67,25 @@ export async function getNextUserToProcess(): Promise<{
   token: string;
 } | null> {
     try {
+        const stuckRes = await databases.listDocuments(
+            DB_ID,
+            COLLECTION_ID,
+            [
+                Query.equal('status', 'processing'),
+                Query.limit(1)
+            ]
+        );
+
+        if (stuckRes.documents.length > 0) {
+             const doc = stuckRes.documents[0];
+             console.log(`Found stuck processing user ${doc.userId}, picking them up.`);
+             return {
+                userId: doc.userId,
+                slackUserId: doc.slackUserId,
+                token: doc.token,
+            };
+        }
+
         const res = await databases.listDocuments(
             DB_ID,
             COLLECTION_ID,
