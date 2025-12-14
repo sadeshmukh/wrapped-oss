@@ -40,7 +40,13 @@ export default function Home() {
   useEffect(() => {
     async function checkStatus() {
       try {
-        const res = await fetch('/api/wrapped');
+        const params = new URLSearchParams(window.location.search);
+        const customHackatime = params.get('customHackatime');
+        const url = customHackatime 
+          ? `/api/wrapped?customHackatime=${customHackatime}` 
+          : '/api/wrapped';
+
+        const res = await fetch(url);
         
         if (res.status === 401) {
           setLoading(false);
