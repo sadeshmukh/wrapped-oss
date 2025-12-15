@@ -175,7 +175,8 @@ export async function GET(request: Request) {
       ySwsSubmissions,
       ySwsProjects,
       hackatimeHours,
-      randomGroup: getUserClan(userId).name
+      randomGroup: getUserClan(userId).name,
+      isNoPrivates
     };
 
     return NextResponse.json({ ...data, requiresGithub });

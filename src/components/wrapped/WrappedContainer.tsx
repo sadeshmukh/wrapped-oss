@@ -293,7 +293,7 @@ export default function WrappedContainer({ data, slides, isSharedView = false }:
           <div className="bg-white text-black p-6 rounded-2xl max-w-sm w-full shadow-2xl">
             <h3 className="text-xl font-bold mb-2">Share your Wrapped?</h3>
             <p className="text-gray-600 mb-6">
-              This will create a public link to your entire Hack Club Wrapped 2025. Anyone with the link can view it.
+              This will create a public link to your entire Wrapped content. Anyone with the link can view it.
             </p>
             
             <div className="flex flex-col gap-2 mb-6">
