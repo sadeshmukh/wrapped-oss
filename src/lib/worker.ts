@@ -39,7 +39,7 @@ async function slackFetch(endpoint: string, initialToken: string, params: Record
                     continue;
                 }
 
-                if (data.error === 'token_revoked' || data.error === 'account_inactive') {
+                if (data.error === 'token_revoked' || data.error === 'account_inactive' || data.error === 'invalid_auth') {
                     throw new Error(data.error);
                 }
                 
@@ -61,7 +61,10 @@ async function slackFetch(endpoint: string, initialToken: string, params: Record
             }
 
             return data;
-        } catch (e) {
+        } catch (e: any) {
+            if (e.message === 'token_revoked' || e.message === 'account_inactive' || e.message === 'invalid_auth') {
+                throw e;
+            }
             console.error(`Fetch error on ${endpoint}:`, e);
             if (i === retries - 1 && j === availableTokens.length - 1) throw e;
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -308,8 +311,8 @@ async function processUser(
         prox2Messages
     };
   } catch (error: any) {
-    if (error.message === 'token_revoked' || error.message === 'account_inactive') {
-        console.log(`User ${userId} token revoked. Removing from DB and DMing.`);
+    if (error.message === 'token_revoked' || error.message === 'account_inactive' || error.message === 'invalid_auth') {
+        console.log(`User ${userId} token revoked/invalid. Removing from DB and DMing.`);
         await removeUser(userId);
         
         const botTokens = getAllSlackTokens();

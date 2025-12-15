@@ -63,10 +63,16 @@ export default function WrappedContainer({ data, slides, isSharedView = false }:
   const handleShare = async () => {
     setIsSharingLoading(true);
     try {
-      const res = await fetch('/api/share', { method: 'POST' });
-      const data = await res.json();
-      if (data.publicId) {
-        setShareUrl(`${window.location.origin}/view/${data.publicId}`);
+      const res = await fetch('/api/share', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      const resData = await res.json();
+      if (resData.publicId) {
+        setShareUrl(`${window.location.origin}/view/${resData.publicId}`);
       }
     } catch (e) {
       console.error(e);

@@ -15,7 +15,7 @@ export async function GET() {
     return NextResponse.json({ publicId });
 }
 
-export async function POST() {
+export async function POST(request: Request) {
     const cookieStore = await cookies();
     const userId = cookieStore.get('slack_user_id')?.value;
 
@@ -23,10 +23,15 @@ export async function POST() {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data = await getUserData(userId);
-    
-    if (!data || data.status !== 'completed') {
-        return NextResponse.json({ error: 'Data not ready' }, { status: 400 });
+    let data;
+    try {
+        data = await request.json();
+    } catch (e) {
+        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
+
+    if (!data) {
+         return NextResponse.json({ error: 'No data provided' }, { status: 400 });
     }
     
     const publicId = await createShare(userId, data);
