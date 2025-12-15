@@ -48,7 +48,7 @@ export default function SummarySlide({ data }: SlideProps) {
         <div className="col-span-3 row-span-2 bg-[#1e1e1e] text-wrapped-cream border border-white/10 rounded-2xl p-3 flex flex-col justify-between">
           <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Bestie</span>
           <span className="text-xl md:text-2xl font-black tracking-tighter truncate">
-            {data.shareOptions?.hideBestie || data.isNoPrivates ? '???' : `@${data.topDms[0].name}`}
+            {data.shareOptions?.hideBestie || !data.topDms || data.topDms.length === 0 || data.topDms[0].name === 'Unknown :(' ? '???' : `@${data.topDms[0].name}`}
           </span>
         </div>
 
@@ -58,7 +58,7 @@ export default function SummarySlide({ data }: SlideProps) {
         </div>
         <div className="col-span-2 row-span-1 bg-wrapped-cream text-wrapped-black rounded-xl p-1.5 flex flex-col justify-center items-center text-center">
           <span className="text-[8px] font-bold uppercase opacity-60">Prox2 msgs</span>
-          <span className="text-xl font-black leading-none">{data.isNoPrivates ? '???' : data.prox2Messages}</span>
+          <span className="text-xl font-black leading-none">{data.prox2Messages === 0 ? '???' : data.prox2Messages}</span>
         </div>
         <div className="col-span-2 row-span-1 bg-[#2a2a2a] text-wrapped-cream rounded-xl p-1.5 flex flex-col justify-center items-center text-center border border-white/10">
           <span className="text-[8px] font-bold uppercase opacity-60">Confessions msgs</span>

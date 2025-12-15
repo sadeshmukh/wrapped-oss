@@ -12,7 +12,6 @@ export interface WrappedData {
   ySwsProjects: string[];
   hackatimeHours: number;
   randomGroup: Clan['name'];
-  isNoPrivates?: boolean;
   shareOptions?: {
     hideDms?: boolean;
     hideTopChannels?: boolean;

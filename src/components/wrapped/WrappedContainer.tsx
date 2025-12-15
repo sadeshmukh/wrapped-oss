@@ -131,6 +131,15 @@ export default function WrappedContainer({ data, slides, isSharedView = false }:
       if (data.shareOptions.hideDms && slide.id === 'people-dms') return false;
       if (data.shareOptions.hideTopChannels && slide.id === 'top-channels') return false;
     }
+
+    if (slide.id === 'people-dms') {
+        if (!data.topDms || data.topDms.length === 0 || (data.topDms.length === 1 && data.topDms[0].name === 'Unknown :(')) return false;
+    }
+
+    if (slide.id === 'prox2') {
+        if (!data.prox2Messages || data.prox2Messages === 0) return false;
+    }
+
     return true;
   });
 
