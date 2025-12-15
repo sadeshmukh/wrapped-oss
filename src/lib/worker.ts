@@ -350,11 +350,12 @@ export async function processWaitlist() {
   try {
     await resetStuckUsers();
 
-    const CONCURRENCY = 2;
+    const CONCURRENCY_DEFAULT = 2;
+    const CONCURRENCY_NOPRIVATES = 2;
     const fetchLock = { locked: false };
 
-    const worker = async (workerId: number) => {
-        console.log(`Worker ${workerId} started`);
+    const worker = async (workerId: number, mode: 'default' | 'noprivates') => {
+        console.log(`Worker ${workerId} (${mode}) started`);
         while (true) {
             let user;
             
@@ -364,7 +365,7 @@ export async function processWaitlist() {
             
             fetchLock.locked = true;
             try {
-                user = await getNextUserToProcess();
+                user = await getNextUserToProcess(mode);
             } finally {
                 fetchLock.locked = false;
             }
@@ -373,7 +374,7 @@ export async function processWaitlist() {
                 break;
             }
 
-            console.log(`Worker ${workerId} processing user: ${user.userId}`);
+            console.log(`Worker ${workerId} (${mode}) processing user: ${user.userId}`);
             const result = await processUser(user.userId, user.slackUserId, user.token, user.mode);
             
             await markUserProcessed(user.userId, result.success ? { 
@@ -389,7 +390,10 @@ export async function processWaitlist() {
         }
     };
 
-    await Promise.all(Array.from({ length: CONCURRENCY }, (_, i) => worker(i + 1)));
+    await Promise.all([
+        ...Array.from({ length: CONCURRENCY_DEFAULT }, (_, i) => worker(i + 1, 'default')),
+        ...Array.from({ length: CONCURRENCY_NOPRIVATES }, (_, i) => worker(i + 1 + CONCURRENCY_DEFAULT, 'noprivates'))
+    ]);
   } finally {
     setProcessing(false);
   }

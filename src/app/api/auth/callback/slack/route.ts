@@ -55,6 +55,8 @@ export async function GET(request: Request) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
+    res.cookies.delete('slack_noprivates');
+
     return res;
 
   } catch (error) {
