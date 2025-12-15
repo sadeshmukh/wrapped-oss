@@ -44,7 +44,6 @@ async function slackFetch(endpoint: string, initialToken: string, params: Record
                 }
                 
                 if (data.error === 'not_allowed_token_type') {
-                    console.warn(`Token ending in ...${tokenToUse.slice(-4)} not allowed for ${endpoint}, removing from rotation.`);
                     const indexToRemove = availableTokens.indexOf(tokenToUse);
                     if (indexToRemove > -1) {
                         availableTokens.splice(indexToRemove, 1);
