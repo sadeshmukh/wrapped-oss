@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import WrappedContainer, { SlideConfig } from '@/components/wrapped/WrappedContainer';
-import { SLIDES } from '@/lib/slides';
+import { PUBLIC_SLIDES } from '@/lib/slides';
 import { WrappedData } from '@/types/wrapped';
 
 export default function NoPrivatesHome() {
@@ -179,7 +179,7 @@ export default function NoPrivatesHome() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      <WrappedContainer data={data} slides={SLIDES} />
+      <WrappedContainer data={data} slides={PUBLIC_SLIDES} />
     </main>
   );
 }

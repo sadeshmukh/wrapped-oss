@@ -22,3 +22,14 @@ export const SLIDES: SlideConfig[] = [
   { component: GroupSlide, theme: 'light' },
   { component: SummarySlide, theme: 'dark' }
 ];
+
+export const PUBLIC_SLIDES: SlideConfig[] = [
+  { component: IntroSlide, theme: 'light' },
+  { component: TotalMessagesSlide, theme: 'dark' },
+  { component: TopChannelsSlide, theme: 'light' },
+  { component: ConfessionsMetaSlide, theme: 'light' },
+  { component: YSWSSlide, theme: 'light' },
+  { component: HackatimeSlide, theme: 'dark' },
+  { component: GroupSlide, theme: 'light' },
+  { component: SummarySlide, theme: 'dark' }
+];

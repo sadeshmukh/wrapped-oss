@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
 import { getShareByPublicId } from '@/lib/share';
-import WrappedContainer from '@/components/wrapped/WrappedContainer';
+import SharedWrappedView from '@/components/wrapped/SharedWrappedView';
 import Link from 'next/link';
-import { SLIDES } from '@/lib/slides';
 
 type Props = {
   params: Promise<{ id: string }>
@@ -47,7 +46,7 @@ export default async function SharedWrappedPage({ params }: Props) {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      <WrappedContainer data={data} slides={SLIDES} isSharedView={true} />
+      <SharedWrappedView data={data} />
     </main>
   );
 }
