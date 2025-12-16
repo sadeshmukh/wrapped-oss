@@ -14,7 +14,9 @@ export async function POST() {
 
   try {
     const isNoPrivates = cookieStore.get('slack_noprivates')?.value === 'true';
-    await addToWaitlist(userId, userId, token, isNoPrivates ? 'noprivates' : 'default');
+    const githubUsername = cookieStore.get('github_username')?.value;
+    
+    await addToWaitlist(userId, userId, token, isNoPrivates ? 'noprivates' : 'default', githubUsername);
 
     processWaitlist().catch(err => console.error('Background processing error:', err));
 

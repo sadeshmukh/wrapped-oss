@@ -16,7 +16,8 @@ export async function addToWaitlist(
   userId: string,
   slackUserId: string,
   token: string,
-  mode: 'default' | 'noprivates' = 'default'
+  mode: 'default' | 'noprivates' = 'default',
+  githubUsername?: string
 ): Promise<void> {
   try {
       const existing = await databases.listDocuments(
@@ -39,7 +40,8 @@ export async function addToWaitlist(
             token,
             status: 'pending',
             addedAt: new Date().toISOString(),
-            mode
+            mode,
+            githubUsername
         }
       );
   } catch (error) {
@@ -111,21 +113,27 @@ export async function resetStuckUsers(): Promise<void> {
     }
 }
 
-export async function getNextUserToProcess(): Promise<{
+export async function getNextUserToProcess(mode?: 'default' | 'noprivates'): Promise<{
   userId: string;
   slackUserId: string;
   token: string;
   mode?: 'default' | 'noprivates';
 } | null> {
     try {
+        const queries = [
+            Query.equal('status', 'pending'),
+            Query.orderAsc('addedAt'),
+            Query.limit(1)
+        ];
+
+        if (mode) {
+            queries.push(Query.equal('mode', mode));
+        }
+
         const res = await databases.listDocuments(
             DB_ID,
             COLLECTION_ID,
-            [
-                Query.equal('status', 'pending'),
-                Query.orderAsc('addedAt'),
-                Query.limit(1)
-            ]
+            queries
         );
 
         if (res.documents.length === 0) return null;
@@ -197,11 +205,13 @@ export async function getUserPosition(userId: string): Promise<{ position: numbe
         }
 
         if (userDoc.status === 'pending') {
+            const mode = userDoc.mode || 'default';
             const aheadRes = await databases.listDocuments(
                 DB_ID,
                 COLLECTION_ID,
                 [
                     Query.equal('status', 'pending'),
+                    Query.equal('mode', mode),
                     Query.lessThan('addedAt', userDoc.addedAt)
                 ]
             );

@@ -39,12 +39,11 @@ async function slackFetch(endpoint: string, initialToken: string, params: Record
                     continue;
                 }
 
-                if (data.error === 'token_revoked' || data.error === 'account_inactive') {
+                if (data.error === 'token_revoked' || data.error === 'account_inactive' || data.error === 'invalid_auth') {
                     throw new Error(data.error);
                 }
                 
                 if (data.error === 'not_allowed_token_type') {
-                    console.warn(`Token ending in ...${tokenToUse.slice(-4)} not allowed for ${endpoint}, removing from rotation.`);
                     const indexToRemove = availableTokens.indexOf(tokenToUse);
                     if (indexToRemove > -1) {
                         availableTokens.splice(indexToRemove, 1);
@@ -61,7 +60,10 @@ async function slackFetch(endpoint: string, initialToken: string, params: Record
             }
 
             return data;
-        } catch (e) {
+        } catch (e: any) {
+            if (e.message === 'token_revoked' || e.message === 'account_inactive' || e.message === 'invalid_auth') {
+                throw e;
+            }
             console.error(`Fetch error on ${endpoint}:`, e);
             if (i === retries - 1 && j === availableTokens.length - 1) throw e;
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -308,8 +310,8 @@ async function processUser(
         prox2Messages
     };
   } catch (error: any) {
-    if (error.message === 'token_revoked' || error.message === 'account_inactive') {
-        console.log(`User ${userId} token revoked. Removing from DB and DMing.`);
+    if (error.message === 'token_revoked' || error.message === 'account_inactive' || error.message === 'invalid_auth') {
+        console.log(`User ${userId} token revoked/invalid. Removing from DB and DMing.`);
         await removeUser(userId);
         
         const botTokens = getAllSlackTokens();
@@ -347,11 +349,12 @@ export async function processWaitlist() {
   try {
     await resetStuckUsers();
 
-    const CONCURRENCY = 2;
+    const CONCURRENCY_DEFAULT = 2;
+    const CONCURRENCY_NOPRIVATES = 2;
     const fetchLock = { locked: false };
 
-    const worker = async (workerId: number) => {
-        console.log(`Worker ${workerId} started`);
+    const worker = async (workerId: number, mode: 'default' | 'noprivates') => {
+        console.log(`Worker ${workerId} (${mode}) started`);
         while (true) {
             let user;
             
@@ -361,7 +364,7 @@ export async function processWaitlist() {
             
             fetchLock.locked = true;
             try {
-                user = await getNextUserToProcess();
+                user = await getNextUserToProcess(mode);
             } finally {
                 fetchLock.locked = false;
             }
@@ -370,7 +373,7 @@ export async function processWaitlist() {
                 break;
             }
 
-            console.log(`Worker ${workerId} processing user: ${user.userId}`);
+            console.log(`Worker ${workerId} (${mode}) processing user: ${user.userId}`);
             const result = await processUser(user.userId, user.slackUserId, user.token, user.mode);
             
             await markUserProcessed(user.userId, result.success ? { 
@@ -386,7 +389,10 @@ export async function processWaitlist() {
         }
     };
 
-    await Promise.all(Array.from({ length: CONCURRENCY }, (_, i) => worker(i + 1)));
+    await Promise.all([
+        ...Array.from({ length: CONCURRENCY_DEFAULT }, (_, i) => worker(i + 1, 'default')),
+        ...Array.from({ length: CONCURRENCY_NOPRIVATES }, (_, i) => worker(i + 1 + CONCURRENCY_DEFAULT, 'noprivates'))
+    ]);
   } finally {
     setProcessing(false);
   }

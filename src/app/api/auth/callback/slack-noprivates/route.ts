@@ -39,10 +39,8 @@ export async function GET(request: Request) {
     if (!token) {
       return NextResponse.json({ error: 'No access token received' }, { status: 400 });
     }
-
-    await addToWaitlist(userId, userId, token, 'noprivates');
-
-    const res = NextResponse.redirect(new URL('/noprivates', 'https://wrapped.isitzoe.dev'));
+    
+    const res = NextResponse.redirect(new URL('/', 'https://wrapped.isitzoe.dev'));
 
     res.cookies.set('slack_token', token, {
       httpOnly: true,
