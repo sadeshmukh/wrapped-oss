@@ -167,7 +167,7 @@ async function processUser(
             }
 
             const res = await slackFetch('search.messages', searchToken, {
-              query: query,
+              query: query + ' during:2025',
               count: '1',
             });
             
@@ -241,7 +241,7 @@ async function processUser(
 
     console.log(`Fetching total messages for ${slackUserId}`);
     const totalRes = await slackFetch('search.messages', userToken, { 
-        query: `from:<@${slackUserId}>`, 
+        query: `from:<@${slackUserId}> during:2025`, 
         count: '1' 
     });
     if (!totalRes.ok) console.error(`Total messages fetch failed for ${slackUserId}:`, totalRes.error);
@@ -249,14 +249,14 @@ async function processUser(
     
     console.log(`Fetching confessions for ${slackUserId}`);
     const confessionsRes = await slackFetch('search.messages', userToken, {
-        query: `from:<@${slackUserId}> in:confessions`,
+        query: `from:<@${slackUserId}> in:confessions during:2025`,
         count: '1'
     });
     if (!confessionsRes.ok) console.error(`Confessions fetch failed for ${slackUserId}:`, confessionsRes.error);
 
     console.log(`Fetching meta for ${slackUserId}`);
     const metaRes = await slackFetch('search.messages', userToken, {
-        query: `from:<@${slackUserId}> in:meta`,
+        query: `from:<@${slackUserId}> in:meta during:2025`,
         count: '1'
     });
     if (!metaRes.ok) console.error(`Meta fetch failed for ${slackUserId}:`, metaRes.error);
@@ -265,7 +265,7 @@ async function processUser(
     if (mode !== 'noprivates') {
         console.log(`Fetching prox2 for ${slackUserId}`);
         const prox2Res = await slackFetch('search.messages', userToken, {
-            query: `from:<@${slackUserId}> to:<@U023L3A4UKX>`,
+            query: `from:<@${slackUserId}> to:<@U023L3A4UKX> during:2025`,
             count: '1'
         });
         if (!prox2Res.ok) console.error(`Prox2 fetch failed for ${slackUserId}:`, prox2Res.error);

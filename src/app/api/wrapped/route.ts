@@ -67,7 +67,7 @@ export async function GET(request: Request) {
         totalMessages = storedData.totalMessages;
     } else {
         const searchRes = await slackFetch('search.messages', token, { 
-          query: `from:<@${userId}>`, 
+          query: `from:<@${userId}> during:2025`, 
           count: '1' 
         });
         totalMessages = searchRes.ok ? searchRes.messages.total : 0;
@@ -82,7 +82,7 @@ export async function GET(request: Request) {
         confessionsMessages = storedData.confessionsMessages;
     } else {
         const confessionsRes = await slackFetch('search.messages', token, {
-          query: `from:<@${userId}> in:confessions`,
+          query: `from:<@${userId}> in:confessions during:2025`,
           count: '1'
         });
         confessionsMessages = confessionsRes.ok ? confessionsRes.messages.total : 0;
@@ -93,7 +93,7 @@ export async function GET(request: Request) {
         metaMessages = storedData.metaMessages;
     } else {
         const metaRes = await slackFetch('search.messages', token, {
-          query: `from:<@${userId}> in:meta`,
+          query: `from:<@${userId}> in:meta during:2025`,
           count: '1'
         });
         metaMessages = metaRes.ok ? metaRes.messages.total : 0;
@@ -104,7 +104,7 @@ export async function GET(request: Request) {
         prox2Messages = storedData.prox2Messages;
     } else if (!isNoPrivates) {
         const prox2Res = await slackFetch('search.messages', token, {
-          query: `from:<@${userId}> to:<@U023L3A4UKX>`,
+          query: `from:<@${userId}> to:<@U023L3A4UKX> during:2025`,
           count: '1'
         });
         prox2Messages = prox2Res.ok ? prox2Res.messages.total : 0;
