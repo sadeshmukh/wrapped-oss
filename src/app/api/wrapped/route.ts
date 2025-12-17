@@ -6,6 +6,7 @@ import { getUserData, getUserPosition, removeUser } from '@/lib/waitlist';
 import { getUserClan } from '@/lib/clans';
 import { processWaitlist } from '@/lib/worker';
 import { getAllSlackTokens } from '@/lib/slack-tokens';
+import { deleteShare } from '@/lib/share';
 
 async function slackFetch(endpoint: string, token: string, params: Record<string, string> = {}) {
   const url = new URL(`https://slack.com/api/${endpoint}`);
@@ -212,3 +213,27 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('slack_user_id')?.value;
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    await removeUser(userId);
+    await deleteShare(userId);
+    
+    cookieStore.delete('slack_token');
+    cookieStore.delete('slack_user_id');
+    cookieStore.delete('slack_noprivates');
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting wrapped:', error);
+    return NextResponse.json({ error: 'Failed to delete wrapped' }, { status: 500 });
+  }
+}
+

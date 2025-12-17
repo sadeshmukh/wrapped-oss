@@ -24,7 +24,9 @@ export default function WrappedContainer({ data, slides, isSharedView = false }:
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showShareConfirmation, setShowShareConfirmation] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isSharingLoading, setIsSharingLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [shareOptions, setShareOptions] = useState({
     hideDms: false,
     hideTopChannels: false,
@@ -111,6 +113,22 @@ export default function WrappedContainer({ data, slides, isSharedView = false }:
     if (shareUrl) {
       navigator.clipboard.writeText(shareUrl);
       setShowShareMenu(false);
+    }
+  };
+
+  const handleDeleteWrapped = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch('/api/wrapped', { method: 'DELETE' });
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        console.error('Failed to delete wrapped');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -267,6 +285,13 @@ export default function WrappedContainer({ data, slides, isSharedView = false }:
                                 {isSharingLoading ? 'Creating...' : 'Share Wrapped'}
                             </button>
                         )}
+                        <div className="h-px bg-gray-200 my-1" />
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); setShowDeleteConfirmation(true); setShowShareMenu(false); }}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm font-bold text-red-600"
+                        >
+                            Delete Wrapped
+                        </button>
                     </div>
                 )}
             </div>
@@ -353,6 +378,38 @@ export default function WrappedContainer({ data, slides, isSharedView = false }:
         </div>
       )}
 
+      {showDeleteConfirmation && (
+        <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white text-black p-6 rounded-2xl max-w-sm w-full shadow-2xl">
+            <h3 className="text-xl font-bold mb-2 text-red-600">Delete your Wrapped?</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete your Wrapped?
+              <br/><br/>
+              <span className="font-bold">Warning:</span>
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>You will need to rejoin the waitlist to generate it again.</li>
+                <li>Your public share link (if it exists) will be permanently deleted.</li>
+              </ul>
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirmation(false)}
+                className="flex-1 px-4 py-2 rounded-xl font-bold bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteWrapped}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 rounded-xl font-bold bg-red-600 text-white hover:bg-red-700 transition-colors"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       <div className="absolute inset-0 flex z-40">
         <div className="w-1/3 h-full cursor-w-resize" onClick={(e) => { e.stopPropagation(); prevSlide(); }} />
