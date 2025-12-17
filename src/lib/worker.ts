@@ -366,27 +366,6 @@ export async function processWaitlist() {
             }
 
             if (!user) {
-                if (mode === 'default') {
-                    while (fetchLock.locked) {
-                        await new Promise(resolve => setTimeout(resolve, 50));
-                    }
-                    
-                    fetchLock.locked = true;
-                    try {
-                        user = await getNextUserForStatsBackfill();
-                    } finally {
-                        fetchLock.locked = false;
-                    }
-
-                    if (user) {
-                        console.log(`Worker ${workerId} (backfill) processing user: ${user.userId}`);
-                        
-                        await markUserProcessed(user.userId);
-                        
-                        await new Promise((resolve) => setTimeout(resolve, 100));
-                        continue;
-                    }
-                }
                 break;
             }
 
