@@ -87,7 +87,6 @@ export const getQueueSize = getWaitlistSize;
 
 export async function resetStuckUsers(): Promise<void> {
     try {
-        console.log('Checking for stuck users...');
         const stuckRes = await databases.listDocuments(
             DB_ID,
             COLLECTION_ID,
@@ -97,10 +96,7 @@ export async function resetStuckUsers(): Promise<void> {
             ]
         );
 
-        console.log(`Found ${stuckRes.total} stuck users.`);
-
         for (const doc of stuckRes.documents) {
-             console.log(`Resetting stuck user ${doc.userId} to pending.`);
              await databases.updateDocument(
                 DB_ID,
                 COLLECTION_ID,
@@ -227,18 +223,14 @@ export async function getUserPosition(userId: string): Promise<{ position: numbe
 
 export async function getUserData(userId: string): Promise<any | null> {
     try {
-        console.log(`[getUserData] Querying for userId: ${userId}`);
         const res = await databases.listDocuments(
             DB_ID,
             COLLECTION_ID,
             [Query.equal('userId', userId)]
         );
         
-        console.log(`[getUserData] Found ${res.documents.length} documents`);
-
         if (res.documents.length > 0) {
             const doc = res.documents[0];
-            console.log(`[getUserData] Document ID: ${doc.$id}, Status: ${doc.status}`);
             if (doc.status === 'completed' && doc.results) {
                 return JSON.parse(doc.results);
             }

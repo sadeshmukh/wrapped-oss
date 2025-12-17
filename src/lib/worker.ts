@@ -103,8 +103,6 @@ async function processUser(
   mode: 'default' | 'noprivates' = 'default'
 ): Promise<any> {
   try {
-    console.log(`Processing user ${userId} (mode: ${mode})...`);
-
     const botTokens = getAllSlackTokens();
     const publicTokens = [...botTokens, userToken].filter(Boolean);
     const publicTokenIndex = { val: 0 };
@@ -118,11 +116,9 @@ async function processUser(
     });
 
     const channels = conversationsRes.ok ? conversationsRes.channels : [];
-    console.log(`User ${userId} is in ${channels.length} channels`);
 
     let nextCursor = conversationsRes.response_metadata?.next_cursor;
     while (nextCursor) {
-        console.log(`Fetching more channels... cursor: ${nextCursor}`);
         const nextRes = await slackFetch('users.conversations', userToken, {
             types,
             limit: '200',
@@ -138,7 +134,6 @@ async function processUser(
         }
         await new Promise(resolve => setTimeout(resolve, 500));
     }
-    console.log(`Total channels found: ${channels.length}`);
 
     const channelStats: ChannelStat[] = [];
     const dmStats: DmStat[] = [];
@@ -238,25 +233,18 @@ async function processUser(
           return { name: dm.userId, count: dm.count };
       }));
 
-    console.log(`User ${userId} top channels:`, topChannels);
-    console.log(`User ${userId} top DMs:`, topDms);
-
-    console.log(`Fetching total messages for ${slackUserId}`);
     const totalRes = await slackFetch('search.messages', userToken, { 
         query: `from:<@${slackUserId}> during:2025`, 
         count: '1' 
     });
     if (!totalRes.ok) console.error(`Total messages fetch failed for ${slackUserId}:`, totalRes.error);
-    else console.log(`Total messages for ${slackUserId}: ${totalRes.messages?.total}`);
     
-    console.log(`Fetching confessions for ${slackUserId}`);
     const confessionsRes = await slackFetch('search.messages', userToken, {
         query: `from:<@${slackUserId}> in:confessions during:2025`,
         count: '1'
     });
     if (!confessionsRes.ok) console.error(`Confessions fetch failed for ${slackUserId}:`, confessionsRes.error);
 
-    console.log(`Fetching meta for ${slackUserId}`);
     const metaRes = await slackFetch('search.messages', userToken, {
         query: `from:<@${slackUserId}> in:meta during:2025`,
         count: '1'
@@ -265,7 +253,6 @@ async function processUser(
 
     let prox2Messages = 0;
     if (mode !== 'noprivates') {
-        console.log(`Fetching prox2 for ${slackUserId}`);
         const prox2Res = await slackFetch('search.messages', userToken, {
             query: `from:<@${slackUserId}> to:<@U023L3A4UKX> during:2025`,
             count: '1'
@@ -311,7 +298,6 @@ async function processUser(
     };
   } catch (error: any) {
     if (error.message === 'token_revoked' || error.message === 'account_inactive' || error.message === 'invalid_auth') {
-        console.log(`User ${userId} token revoked/invalid. Removing from DB and DMing.`);
         await removeUser(userId);
         
         const botTokens = getAllSlackTokens();
@@ -354,7 +340,6 @@ export async function processWaitlist() {
     const fetchLock = { locked: false };
 
     const worker = async (workerId: number, mode: 'default' | 'noprivates') => {
-        console.log(`Worker ${workerId} (${mode}) started`);
         while (true) {
             let user;
             
@@ -373,7 +358,6 @@ export async function processWaitlist() {
                 break;
             }
 
-            console.log(`Worker ${workerId} (${mode}) processing user: ${user.userId}`);
             const result = await processUser(user.userId, user.slackUserId, user.token, user.mode);
             
             await markUserProcessed(user.userId, result.success ? { 

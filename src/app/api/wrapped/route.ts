@@ -42,12 +42,10 @@ export async function GET(request: Request) {
     let topDms: { name: string; count: number; image?: string }[] = [];
     
     if (storedData && storedData.topChannels) {
-        console.log('Using stored top channels data');
         topChannels = storedData.topChannels;
     }
     
     if (storedData && storedData.topDms) {
-        console.log('Using stored top DMs data');
         topDms = storedData.topDms;
     }
 
@@ -185,7 +183,6 @@ export async function GET(request: Request) {
     console.error('Data fetch error:', error);
 
     if (error.message && (error.message.includes('token_revoked') || error.message.includes('account_inactive'))) {
-        console.log(`User ${userId} token revoked (in API). Removing from DB.`);
         if (userId) await removeUser(userId);
         
         const botTokens = getAllSlackTokens();
