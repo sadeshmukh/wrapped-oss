@@ -1,17 +1,24 @@
 import { getNextUserToProcess, markUserProcessed, isProcessingActive, setProcessing, resetStuckUsers, removeUser, updateGlobalStats, getNextUserForStatsBackfill } from '@/lib/waitlist';
 import { getAllSlackTokens } from '@/lib/slack-tokens';
 
-async function slackFetch(endpoint: string, initialToken: string, params: Record<string, string> = {}, retries = 100) {
+async function slackFetch(endpoint: string, initialToken: string | null, params: Record<string, string> = {}, retries = 100) {
   const url = new URL(`https://slack.com/api/${endpoint}`);
   Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
 
   const botTokens = getAllSlackTokens();
-  const isUserToken = initialToken.startsWith('xoxp');
-  const availableTokens = (isUserToken ? [initialToken] : [...botTokens, initialToken])
-    .filter((t, i, self) => self.indexOf(t) === i && t);
+  const isUserToken = initialToken?.startsWith('xoxp');
+  
+  let availableTokens: string[] = [];
+  if (initialToken) {
+      availableTokens = isUserToken ? [initialToken] : [...botTokens, initialToken];
+  } else {
+      availableTokens = [...botTokens];
+  }
+  
+  availableTokens = availableTokens.filter((t, i, self) => self.indexOf(t) === i && t);
 
-  if (availableTokens.length === 0 && initialToken) {
-    availableTokens.push(initialToken);
+  if (availableTokens.length === 0) {
+    return { ok: false, error: 'no_tokens_available' };
   }
   
   let currentTokenIndex = 0;
@@ -102,6 +109,10 @@ async function processUser(
   userToken: string,
   mode: 'default' | 'noprivates' = 'default'
 ): Promise<any> {
+  if (!userToken) {
+      return { success: false, error: 'no_token' };
+  }
+
   try {
     const botTokens = getAllSlackTokens();
     const publicTokens = [...botTokens, userToken].filter(Boolean);
@@ -371,7 +382,7 @@ export async function processWaitlist() {
                         console.log(`Worker ${workerId} (backfill) processing user: ${user.userId}`);
                         
                         const botTokens = getAllSlackTokens();
-                        const publicToken = botTokens[0];
+                        const publicToken = botTokens.find(t => t.startsWith('xoxp')) || botTokens[0];
                         
                         let totalMessages = 0;
                         try {
