@@ -376,9 +376,10 @@ export async function processWaitlist() {
                         let totalMessages = 0;
                         try {
                             const totalRes = await slackFetch('search.messages', publicToken, { 
-                                query: `from:<@${user.slackUserId}> during:2025`, 
+                                query: `from:<@${user.userId}> during:2025`, 
                                 count: '1' 
                             });
+                            console.log(`Backfill fetch for ${user.userId} returned:`, totalRes.ok, totalRes.error, totalRes.messages?.total);
                             totalMessages = totalRes.ok ? totalRes.messages.total : 0;
                         } catch (e) {
                             console.error(`Backfill fetch error for ${user.userId}`, e);
