@@ -155,6 +155,46 @@ export async function resetStuckUsers(): Promise<void> {
     }
 }
 
+export async function getNextUserForStatsBackfill(): Promise<{
+    userId: string;
+    slackUserId: string;
+    token: string;
+    mode?: 'default' | 'noprivates';
+} | null> {
+    try {
+        const res = await databases.listDocuments(
+            DB_ID,
+            COLLECTION_ID,
+            [
+                Query.equal('status', 'completed'),
+                Query.isNull('globalStatsID'),
+                Query.limit(1)
+            ]
+        );
+
+        if (res.documents.length === 0) return null;
+
+        const doc = res.documents[0];
+        
+        await databases.updateDocument(
+            DB_ID,
+            COLLECTION_ID,
+            doc.$id,
+            { status: 'processing', token: null }
+        );
+
+        return {
+            userId: doc.userId,
+            slackUserId: doc.slackUserId,
+            token: doc.token,
+            mode: doc.mode || 'default',
+        };
+    } catch (e) {
+        console.error('Error getting next user for stats backfill', e);
+        return null;
+    }
+}
+
 export async function getNextUserToProcess(mode?: 'default' | 'noprivates'): Promise<{
   userId: string;
   slackUserId: string;

@@ -1,4 +1,4 @@
-import { getNextUserToProcess, markUserProcessed, isProcessingActive, setProcessing, resetStuckUsers, removeUser, updateGlobalStats } from '@/lib/waitlist';
+import { getNextUserToProcess, markUserProcessed, isProcessingActive, setProcessing, resetStuckUsers, removeUser, updateGlobalStats, getNextUserForStatsBackfill } from '@/lib/waitlist';
 import { getAllSlackTokens } from '@/lib/slack-tokens';
 
 async function slackFetch(endpoint: string, initialToken: string, params: Record<string, string> = {}, retries = 100) {
@@ -355,6 +355,43 @@ export async function processWaitlist() {
             }
 
             if (!user) {
+                if (mode === 'default') {
+                    while (fetchLock.locked) {
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                    
+                    fetchLock.locked = true;
+                    try {
+                        user = await getNextUserForStatsBackfill();
+                    } finally {
+                        fetchLock.locked = false;
+                    }
+
+                    if (user) {
+                        console.log(`Worker ${workerId} (backfill) processing user: ${user.userId}`);
+                        
+                        const botTokens = getAllSlackTokens();
+                        const publicToken = botTokens[0];
+                        
+                        let totalMessages = 0;
+                        try {
+                            const totalRes = await slackFetch('search.messages', publicToken, { 
+                                query: `from:<@${user.slackUserId}> during:2025`, 
+                                count: '1' 
+                            });
+                            totalMessages = totalRes.ok ? totalRes.messages.total : 0;
+                        } catch (e) {
+                            console.error(`Backfill fetch error for ${user.userId}`, e);
+                        }
+
+                        await updateGlobalStats(user.userId, totalMessages);
+                        
+                        await markUserProcessed(user.userId);
+                        
+                        await new Promise((resolve) => setTimeout(resolve, 2000));
+                        continue;
+                    }
+                }
                 break;
             }
 
