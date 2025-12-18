@@ -1,14 +1,14 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { SlideProps } from '@/types/wrapped';
-import { Squiggle } from '../ui/Shapes';
+import React from "react";
+import { motion } from "framer-motion";
+import { SlideProps } from "@/types/wrapped";
+import { Squiggle } from "../ui/Shapes";
 
 export default function IntroSlide({ data }: SlideProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center w-full relative overflow-hidden">
       <div className="absolute inset-0 z-0 opacity-20">
-         <Squiggle className="absolute top-20 left-[-50px] w-[300px] text-wrapped-black rotate-12" />
-         <Squiggle className="absolute bottom-40 right-[-50px] w-[400px] text-wrapped-black -rotate-6" />
+        <Squiggle className="absolute top-20 left-[-50px] w-[300px] text-wrapped-black rotate-12" />
+        <Squiggle className="absolute bottom-40 right-[-50px] w-[400px] text-wrapped-black -rotate-6" />
       </div>
 
       <div className="z-10 flex flex-col items-center gap-6 max-w-md px-6">
@@ -18,9 +18,9 @@ export default function IntroSlide({ data }: SlideProps) {
           transition={{ duration: 0.8, type: "spring" }}
           className="mb-8"
         >
-          <img 
-            src="https://assets.hackclub.com/flag-standalone.svg" 
-            alt="Hack Club Flag" 
+          <img
+            src="https://assets.hackclub.com/flag-standalone.svg"
+            alt="Hack Club Flag"
             className="w-32 h-auto"
           />
         </motion.div>

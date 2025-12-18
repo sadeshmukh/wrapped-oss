@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { SlideProps } from '@/types/wrapped';
+import React from "react";
+import { motion } from "framer-motion";
+import { SlideProps } from "@/types/wrapped";
 
 export default function TotalMessagesSlide({ data }: SlideProps) {
   return (
@@ -12,7 +12,12 @@ export default function TotalMessagesSlide({ data }: SlideProps) {
             className="absolute border-[20px] border-wrapped-cream rounded-full"
             style={{ width: `${i * 200}px`, height: `${i * 200}px` }}
             animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 4, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              delay: i * 0.2,
+              ease: "easeInOut",
+            }}
           />
         ))}
       </div>
@@ -34,7 +39,11 @@ export default function TotalMessagesSlide({ data }: SlideProps) {
           transition={{ delay: 0.5 }}
           className="mt-8 text-2xl font-bold text-wrapped-cream"
         >
-          You sent <span className="text-wrapped-cyan">{data.totalMessages.toLocaleString()}</span> messages across the Slack.
+          You sent{" "}
+          <span className="text-wrapped-cyan">
+            {data.totalMessages.toLocaleString()}
+          </span>{" "}
+          messages across the Slack.
           <br />
           That's a lot of yapping.
         </motion.div>

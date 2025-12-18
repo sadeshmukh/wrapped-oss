@@ -1,17 +1,19 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { SlideProps } from '@/types/wrapped';
+import React from "react";
+import { motion } from "framer-motion";
+import { SlideProps } from "@/types/wrapped";
 
 export default function Prox2Slide({ data }: SlideProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full w-full relative overflow-hidden bg-wrapped-black text-wrapped-cream">
-      <div className="absolute inset-0 opacity-20" 
-           style={{ 
-             backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', 
-             backgroundSize: '20px 20px' 
-           }} 
+      <div
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+          backgroundSize: "20px 20px",
+        }}
       />
-      
+
       <div className="z-10 text-center px-6 relative w-full max-w-2xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -27,8 +29,8 @@ export default function Prox2Slide({ data }: SlideProps) {
         </motion.div>
 
         <motion.div
-          initial={{ scale: 0.8, opacity: 0, filter: 'blur(10px)' }}
-          animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
+          initial={{ scale: 0.8, opacity: 0, filter: "blur(10px)" }}
+          animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
           transition={{ type: "spring", bounce: 0.5, delay: 0.2 }}
           className="relative mb-7"
         >

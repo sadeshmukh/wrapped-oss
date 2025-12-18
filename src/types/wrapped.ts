@@ -1,4 +1,4 @@
-import { Clan } from '@/lib/clans';
+import { Clan } from "@/lib/clans";
 
 export interface WrappedData {
   userName: string;
@@ -11,7 +11,7 @@ export interface WrappedData {
   ySwsSubmissions: number;
   ySwsProjects: string[];
   hackatimeHours: number;
-  randomGroup: Clan['name'];
+  randomGroup: Clan["name"];
   shareOptions?: {
     hideDms?: boolean;
     hideTopChannels?: boolean;

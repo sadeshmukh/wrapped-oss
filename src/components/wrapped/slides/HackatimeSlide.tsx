@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { SlideProps } from '@/types/wrapped';
-import { Squiggle } from '../ui/Shapes';
+import React from "react";
+import { motion } from "framer-motion";
+import { SlideProps } from "@/types/wrapped";
+import { Squiggle } from "../ui/Shapes";
 
 export default function HackatimeSlide({ data }: SlideProps) {
   return (
@@ -9,9 +9,13 @@ export default function HackatimeSlide({ data }: SlideProps) {
       <div className="absolute inset-0 z-0">
         <Squiggle className="absolute top-[-50px] right-[-50px] w-[400px] text-wrapped-blue opacity-20 rotate-45" />
         <Squiggle className="absolute bottom-[-50px] left-[-50px] w-[400px] text-wrapped-red opacity-20 -rotate-12" />
-        
-        <div className="absolute inset-0 opacity-10" 
-             style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }} 
+
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: "radial-gradient(#000 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
         />
       </div>
 
@@ -33,7 +37,7 @@ export default function HackatimeSlide({ data }: SlideProps) {
           <h1 className="text-[120px] md:text-[160px] font-black leading-[0.8] tracking-tighter text-wrapped-red mix-blend-multiply">
             {Math.round(data.hackatimeHours)}
           </h1>
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -50,9 +54,15 @@ export default function HackatimeSlide({ data }: SlideProps) {
           className="mt-12 max-w-md text-lg font-medium leading-tight"
         >
           <p>
-            That's <span className="font-black bg-wrapped-yellow px-1">{(data.hackatimeHours * 60).toLocaleString()}</span> minutes of coding.
+            That's{" "}
+            <span className="font-black bg-wrapped-yellow px-1">
+              {(data.hackatimeHours * 60).toLocaleString()}
+            </span>{" "}
+            minutes of coding.
             <br />
-            <span className="text-sm text-wrapped-muted mt-2 block">(Or debugging. Mostly debugging, be honest.)</span>
+            <span className="text-sm text-wrapped-muted mt-2 block">
+              (Or debugging. Mostly debugging, be honest.)
+            </span>
           </p>
         </motion.div>
       </div>

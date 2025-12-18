@@ -1,40 +1,40 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Phantom Sans';
-  src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff')
-      format('woff'),
-    url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff2')
-      format('woff2');
+  font-family: "Phantom Sans";
+  src: url("https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff")
+      format("woff"),
+    url("https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff2")
+      format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Phantom Sans';
-  src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Italic.woff')
-      format('woff'),
-    url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Italic.woff2')
-      format('woff2');
+  font-family: "Phantom Sans";
+  src: url("https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Italic.woff")
+      format("woff"),
+    url("https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Italic.woff2")
+      format("woff2");
   font-weight: normal;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Phantom Sans';
-  src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff')
-      format('woff'),
-    url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff2')
-      format('woff2');
+  font-family: "Phantom Sans";
+  src: url("https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff")
+      format("woff"),
+    url("https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff2")
+      format("woff2");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  --background: #F3F2EF;
+  --background: #f3f2ef;
   --foreground: #121212;
-  
+
   --hc-red: #ec3750;
   --hc-orange: #ff8c37;
   --hc-yellow: #f1c40f;
@@ -43,10 +43,10 @@
   --hc-blue: #338eda;
   --hc-purple: #a633d6;
   --hc-muted: #8492a6;
-  
-  --color-wrapped-cream: #F3F2EF;
+
+  --color-wrapped-cream: #f3f2ef;
   --color-wrapped-black: #121212;
-  
+
   --color-wrapped-red: var(--hc-red);
   --color-wrapped-orange: var(--hc-orange);
   --color-wrapped-yellow: var(--hc-yellow);
@@ -60,7 +60,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   --color-wrapped-cream: var(--color-wrapped-cream);
   --color-wrapped-black: var(--color-wrapped-black);
   --color-wrapped-red: var(--color-wrapped-red);
@@ -72,7 +72,7 @@
   --color-wrapped-purple: var(--color-wrapped-purple);
   --color-wrapped-muted: var(--color-wrapped-muted);
 
-  --font-sans: 'Phantom Sans', system-ui, sans-serif;
+  --font-sans: "Phantom Sans", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 }
 

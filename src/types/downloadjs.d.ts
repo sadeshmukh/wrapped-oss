@@ -1,1 +1,1 @@
-declare module 'downloadjs';
+declare module "downloadjs";

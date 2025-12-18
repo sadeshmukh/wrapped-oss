@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { SlideProps } from '@/types/wrapped';
+import React from "react";
+import { motion } from "framer-motion";
+import { SlideProps } from "@/types/wrapped";
 
 export default function TopChannelsSlide({ data }: SlideProps) {
   return (
@@ -35,9 +35,13 @@ export default function TopChannelsSlide({ data }: SlideProps) {
               transition={{ delay: index * 0.1 + 0.5 }}
               className="flex items-center gap-4"
             >
-              <span className="text-4xl font-black text-wrapped-black w-8">{channel.rank}</span>
+              <span className="text-4xl font-black text-wrapped-black w-8">
+                {channel.rank}
+              </span>
               <div className="bg-wrapped-black text-wrapped-cream px-6 py-4 text-3xl font-bold transform -skew-x-6 w-full shadow-lg">
-                <span className="transform skew-x-6 inline-block">#{channel.name}</span>
+                <span className="transform skew-x-6 inline-block">
+                  #{channel.name}
+                </span>
               </div>
             </motion.div>
           ))}

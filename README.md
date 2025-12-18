@@ -57,12 +57,21 @@ It grabs data from Slack, Hackatime and the YSWS db to make a cool slideshow sum
    ```env
    SLACK_CLIENT_ID=your_slack_client_id
    SLACK_CLIENT_SECRET=your_slack_client_secret
-   
+
    APPWRITE_API_KEY=your_appwrite_api_key
-   
-   # Note: The Appwrite Endpoint, Project ID, Database ID, and Collection ID 
-   # are currently hardcoded in src/lib/waitlist.ts together with redirect url (I'm lazy, sue me).
    ```
+
+## Appwrite Configuration
+
+The following environment variables are required for Appwrite integration:
+
+- `APPWRITE_ENDPOINT`: Your Appwrite endpoint (e.g., `https://cloud.appwrite.io/v1`)
+- `APPWRITE_PROJECT_ID`: Your Appwrite project ID
+- `APPWRITE_API_KEY`: An Appwrite API key with `documents.read` and `documents.write` scopes
+- `APPWRITE_DATABASE_ID`: The ID of your Appwrite database
+- `APPWRITE_COLLECTION_ID`: The ID of the collection for user data
+- `APPWRITE_GLOBAL_STATS_COLLECTION_ID`: The ID of the collection for global statistics
+- `APPWRITE_PUBLIC_WRAPPEDS_COLLECTION_ID`: The ID of the collection for public shared wrappeds
 
 4. **Run the dev server:**
 

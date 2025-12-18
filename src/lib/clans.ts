@@ -1,30 +1,30 @@
 export const CLANS = [
-  { 
-    id: 1, 
-    name: 'Great Leosians', 
+  {
+    id: 1,
+    name: "Great Leosians",
   },
-  { 
-    id: 2, 
-    name: 'Zach Clubbers', 
+  {
+    id: 2,
+    name: "Zach Clubbers",
   },
-  { 
-    id: 3, 
-    name: 'Pixel Cultists', 
+  {
+    id: 3,
+    name: "Pixel Cultists",
   },
-  { 
-    id: 4, 
-    name: 'Apple Collectors', 
+  {
+    id: 4,
+    name: "Apple Collectors",
   },
-  { 
-    id: 5, 
-    name: 'Waffle Makers', 
+  {
+    id: 5,
+    name: "Waffle Makers",
   },
 ] as const;
 
-export type Clan = typeof CLANS[number];
+export type Clan = (typeof CLANS)[number];
 
 export function getUserClan(identifier: string): Clan {
-  const sum = identifier.split('').reduce((acc, char) => {
+  const sum = identifier.split("").reduce((acc, char) => {
     return acc + char.charCodeAt(0);
   }, 0);
 
