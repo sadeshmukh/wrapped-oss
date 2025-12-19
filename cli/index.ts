@@ -1,9 +1,12 @@
+#!/usr/bin/env node
 import prompts from "prompts";
 import chalk from "chalk";
 import ora from "ora";
 import open from "open";
 import http from "http";
 import { scrapeUserStats } from "./scraper.js";
+
+const DEFAULT_SERVER_URL = "https://wrapped.sahil.ink";
 
 async function createApp(
   configurationToken: string
@@ -141,8 +144,7 @@ async function main() {
       type: "text",
       name: "serverUrl",
       message: "Wrapped Server URL",
-      initial:
-        process.env.NEXT_PUBLIC_SERVER_URL || "https://wrapped.sahil.ink",
+      initial: process.env.NEXT_PUBLIC_SERVER_URL || DEFAULT_SERVER_URL,
     },
     {
       type: "text",
