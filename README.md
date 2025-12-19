@@ -9,8 +9,8 @@ It grabs data from Slack, Hackatime and the YSWS db to make a cool slideshow sum
 If you don't want to use `npx wrapped-cli` to upload your data, you can run it manually.
 
 ```bash
-git clone https://github.com/sadeshmukh/wrapped.git
-cd wrapped/cli
+git clone https://github.com/sadeshmukh/wrapped-oss.git
+cd wrapped-oss/cli
 npm i && npm run start
 ```
 
