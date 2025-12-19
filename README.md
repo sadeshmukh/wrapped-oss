@@ -4,6 +4,16 @@ A "Wrapped" style site for Hack Club members to see their year in review!!!!
 
 It grabs data from Slack, Hackatime and the YSWS db to make a cool slideshow summary of your year in Hack Club.
 
+## Local CLI
+
+If you don't want to use `npx wrapped-cli` to upload your data, you can run it manually.
+
+```bash
+git clone https://github.com/sadeshmukh/wrapped.git
+cd wrapped/cli
+npm i && npm run start
+```
+
 ## Features
 
 - **Slack Integration**
