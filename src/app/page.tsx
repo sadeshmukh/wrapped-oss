@@ -113,6 +113,14 @@ export default function Home() {
           <p className="text-sm opacity-50 text-center">
             Log in with Hack Club Account
           </p>
+          <a
+            href="https://wrapped.isitzoe.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs opacity-30 hover:opacity-100 transition-opacity text-center mt-4"
+          >
+            Originally made by wrapped.isitzoe.dev
+          </a>
         </div>
       </div>
     );
@@ -148,8 +156,36 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 text-sm opacity-70">
                   <p>1. Copy the secret above</p>
-                  <p>2. Run the CLI tool in your terminal</p>
+                  <p>
+                    2. Run{" "}
+                    <code className="bg-white/10 px-1 py-0.5 rounded font-mono text-wrapped-red">
+                      bunx wrapped-cli
+                    </code>{" "}
+                    (or{" "}
+                    <code className="bg-white/10 px-1 py-0.5 rounded font-mono">
+                      npx
+                    </code>{" "}
+                    if you&apos;re boring)
+                  </p>
                   <p>3. Paste the secret when prompted</p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-white/10 text-xs text-white/40">
+                  <p className="mb-2">
+                    Note: You&apos;ll need your App Configuration Token from{" "}
+                    <a
+                      href="https://api.slack.com/apps"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-white/60 transition-colors"
+                    >
+                      api.slack.com/apps
+                    </a>
+                  </p>
+                  <p>
+                    Look for the <strong>App Configuration Token</strong>{" "}
+                    section at the bottom (use the Access Token, not the Refresh
+                    Token).
+                  </p>
                 </div>
               </div>
             )}
