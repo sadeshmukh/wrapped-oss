@@ -142,6 +142,31 @@ export async function generateUploadSecret(
   }
 }
 
+export async function validateUploadSecret(secret: string): Promise<{
+  valid: boolean;
+  status?: string;
+  hasData?: boolean;
+}> {
+  try {
+    const existing = await databases.listDocuments(DB_ID, COLLECTION_ID, [
+      Query.equal("uploadSecret", secret),
+    ]);
+
+    if (existing.total > 0) {
+      const doc = existing.documents[0];
+      return {
+        valid: true,
+        status: doc.status,
+        hasData: !!doc.data,
+      };
+    }
+    return { valid: false };
+  } catch (error) {
+    console.error("Error validating upload secret:", error);
+    return { valid: false };
+  }
+}
+
 export async function processUpload(
   secret: string,
   data: any
@@ -157,11 +182,12 @@ export async function processUpload(
 
     const doc = existing.documents[0];
     const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+    const existingData = doc.data ? JSON.parse(doc.data) : {};
+    const newData = { ...existingData, ...parsedData };
 
     const updateData: any = {
       status: "completed",
-      data: JSON.stringify(parsedData),
-      uploadSecret: null,
+      data: JSON.stringify(newData),
     };
 
     if (parsedData.userName) {
