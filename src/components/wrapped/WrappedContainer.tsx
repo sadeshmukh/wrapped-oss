@@ -25,6 +25,7 @@ export default function WrappedContainer({
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [isManualNavigation, setIsManualNavigation] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showShareConfirmation, setShowShareConfirmation] = useState(false);
@@ -192,14 +193,16 @@ export default function WrappedContainer({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
+        setIsManualNavigation(true);
         nextSlide();
       } else if (event.key === "ArrowLeft") {
+        setIsManualNavigation(true);
         prevSlide();
       } else if (event.key === " ") {
         setIsPaused((prev) => !prev);
       }
     },
-    [nextSlide, prevSlide],
+    [nextSlide, prevSlide]
   );
 
   useEffect(() => {
@@ -217,7 +220,11 @@ export default function WrappedContainer({
 
   return (
     <div
-      className={`relative w-full h-[100dvh] overflow-hidden flex items-center justify-center transition-colors duration-500 ${isDark ? "bg-wrapped-black text-wrapped-cream" : "bg-wrapped-cream text-wrapped-black"}`}
+      className={`relative w-full h-[100dvh] overflow-hidden flex items-center justify-center transition-colors duration-500 ${
+        isDark
+          ? "bg-wrapped-black text-wrapped-cream"
+          : "bg-wrapped-cream text-wrapped-black"
+      }`}
       onMouseDown={() => setIsPaused(true)}
       onMouseUp={() => setIsPaused(false)}
       onTouchStart={() => setIsPaused(true)}
@@ -231,7 +238,9 @@ export default function WrappedContainer({
           return (
             <div
               key={index}
-              className={`h-1 flex-1 rounded-full overflow-hidden relative ${isDark ? "bg-white/20" : "bg-black/20"}`}
+              className={`h-1 flex-1 rounded-full overflow-hidden relative ${
+                isDark ? "bg-white/20" : "bg-black/20"
+              }`}
             >
               <div
                 className={`h-full ${isDark ? "bg-white" : "bg-black"}`}
@@ -247,11 +256,14 @@ export default function WrappedContainer({
                   isPaused={isPaused}
                   onComplete={nextSlide}
                   color={isDark ? "white" : "black"}
+                  disabled={isManualNavigation}
                 />
               )}
               {isCompleted && (
                 <div
-                  className={`h-full w-full absolute top-0 left-0 ${isDark ? "bg-white" : "bg-black"}`}
+                  className={`h-full w-full absolute top-0 left-0 ${
+                    isDark ? "bg-white" : "bg-black"
+                  }`}
                 />
               )}
             </div>
@@ -269,7 +281,11 @@ export default function WrappedContainer({
                 e.stopPropagation();
                 setShowShareMenu(!showShareMenu);
               }}
-              className={`p-2 rounded-full backdrop-blur-sm transition-colors ${isDark ? "bg-white/10 hover:bg-white/20 text-white" : "bg-black/10 hover:bg-black/20 text-black"}`}
+              className={`p-2 rounded-full backdrop-blur-sm transition-colors ${
+                isDark
+                  ? "bg-white/10 hover:bg-white/20 text-white"
+                  : "bg-black/10 hover:bg-black/20 text-black"
+              }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -341,7 +357,11 @@ export default function WrappedContainer({
         ) : (
           <a
             href="/"
-            className={`block px-4 py-2 rounded-full backdrop-blur-sm transition-colors text-sm font-bold ${isDark ? "bg-white/10 hover:bg-white/20 text-white" : "bg-black/10 hover:bg-black/20 text-black"}`}
+            className={`block px-4 py-2 rounded-full backdrop-blur-sm transition-colors text-sm font-bold ${
+              isDark
+                ? "bg-white/10 hover:bg-white/20 text-white"
+                : "bg-black/10 hover:bg-black/20 text-black"
+            }`}
           >
             Get your own Wrapped
           </a>
@@ -350,7 +370,11 @@ export default function WrappedContainer({
 
       <button
         onClick={toggleMute}
-        className={`absolute top-8 right-4 z-50 p-2 rounded-full backdrop-blur-sm transition-colors ${isDark ? "bg-white/10 hover:bg-white/20 text-white" : "bg-black/10 hover:bg-black/20 text-black"}`}
+        className={`absolute top-8 right-4 z-50 p-2 rounded-full backdrop-blur-sm transition-colors ${
+          isDark
+            ? "bg-white/10 hover:bg-white/20 text-white"
+            : "bg-black/10 hover:bg-black/20 text-black"
+        }`}
       >
         {isMuted ? (
           <svg
@@ -474,7 +498,8 @@ export default function WrappedContainer({
               <span className="font-bold">Warning:</span>
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li>
-                  You will need to re-upload your data using the CLI to generate it again.
+                  You will need to re-upload your data using the CLI to generate
+                  it again.
                 </li>
                 <li>
                   Your public share link (if it exists) will be permanently
@@ -507,6 +532,7 @@ export default function WrappedContainer({
           className="w-1/3 h-full cursor-w-resize"
           onClick={(e) => {
             e.stopPropagation();
+            setIsManualNavigation(true);
             prevSlide();
           }}
         />
@@ -514,6 +540,7 @@ export default function WrappedContainer({
           className="w-1/3 h-full"
           onClick={(e) => {
             e.stopPropagation();
+            setIsManualNavigation(true);
             nextSlide();
           }}
         />
@@ -521,6 +548,7 @@ export default function WrappedContainer({
           className="w-1/3 h-full cursor-e-resize"
           onClick={(e) => {
             e.stopPropagation();
+            setIsManualNavigation(true);
             nextSlide();
           }}
         />
@@ -569,17 +597,36 @@ function ProgressBar({
   isPaused,
   onComplete,
   color,
+  disabled = false,
 }: {
   duration: number;
   isPaused: boolean;
   onComplete: () => void;
   color: string;
+  disabled?: boolean;
 }) {
   const [progress, setProgress] = useState(0);
   const lastTimeRef = useRef(Date.now());
   const hasCompletedRef = useRef(false);
 
   useEffect(() => {
+    setProgress(0);
+    hasCompletedRef.current = false;
+    lastTimeRef.current = Date.now();
+  }, [duration]);
+
+  useEffect(() => {
+    if (progress >= 100 && !hasCompletedRef.current && !disabled) {
+      hasCompletedRef.current = true;
+      onComplete();
+    }
+  }, [progress, onComplete, disabled]);
+
+  useEffect(() => {
+    if (disabled) {
+      return;
+    }
+
     let animationFrameId: number;
 
     const animate = () => {
@@ -590,14 +637,7 @@ function ProgressBar({
       if (!isPaused && !hasCompletedRef.current) {
         setProgress((prev) => {
           const newProgress = prev + (delta / duration) * 100;
-          if (newProgress >= 100) {
-            if (!hasCompletedRef.current) {
-              hasCompletedRef.current = true;
-              onComplete();
-            }
-            return 100;
-          }
-          return newProgress;
+          return newProgress >= 100 ? 100 : newProgress;
         });
       }
 
@@ -610,7 +650,7 @@ function ProgressBar({
     animationFrameId = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isPaused, duration, onComplete]);
+  }, [isPaused, duration, disabled]);
 
   return (
     <div
