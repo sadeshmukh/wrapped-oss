@@ -97,6 +97,34 @@ export default function Home() {
   if (!authState?.authenticated) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-wrapped-black text-wrapped-cream p-4">
+        <div className="bg-wrapped-blue/20 text-wrapped-cream px-6 py-4 rounded-xl mb-8 max-w-2xl w-full border-2 border-wrapped-blue/40">
+          <div className="flex flex-col gap-2 text-center">
+            <p className="text-xl font-bold tracking-tight">
+              Local Scraper Fork
+            </p>
+            <p className="text-sm opacity-90">
+              This is a fork that provides a CLI to run the scraper locally, only uploading aggregate stats to the server. Your messages never leave your device.
+            </p>
+            <div className="flex flex-col gap-1 mt-1">
+              <a
+                href="https://github.com/sadeshmukh/wrapped-oss"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs opacity-75 hover:opacity-100 transition-opacity underline"
+              >
+                View source code
+              </a>
+              <a
+                href="https://wrapped.isitzoe.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs opacity-75 hover:opacity-100 transition-opacity underline"
+              >
+                View the original version at wrapped.isitzoe.dev
+              </a>
+            </div>
+          </div>
+        </div>
         <h1 className="text-6xl font-black mb-8 tracking-tighter">
           HC Wrapped
         </h1>
@@ -113,14 +141,6 @@ export default function Home() {
           <p className="text-sm opacity-50 text-center">
             Log in with Hack Club Account
           </p>
-          <a
-            href="https://wrapped.isitzoe.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs opacity-30 hover:opacity-100 transition-opacity text-center mt-4"
-          >
-            Originally made by wrapped.isitzoe.dev
-          </a>
         </div>
       </div>
     );
