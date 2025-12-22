@@ -103,7 +103,7 @@ export default function Home() {
               Local Scraper Fork
             </p>
             <p className="text-sm opacity-90">
-              This is a fork that provides a cli to run the scraper locally and only uploads aggregate stats to the server. Your messages never leave your device.
+              This is a fork that provides a CLI to run the scraper locally, only uploading aggregate stats to the server. Your messages never leave your device.
             </p>
             <div className="flex flex-col gap-1 mt-1">
               <a
@@ -112,7 +112,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="text-xs opacity-75 hover:opacity-100 transition-opacity underline"
               >
-                Source code: github.com/sadeshmukh/wrapped-oss
+                View source code
               </a>
               <a
                 href="https://wrapped.isitzoe.dev"
