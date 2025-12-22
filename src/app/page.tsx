@@ -97,6 +97,24 @@ export default function Home() {
   if (!authState?.authenticated) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-wrapped-black text-wrapped-cream p-4">
+        <div className="bg-wrapped-red text-wrapped-cream px-6 py-4 rounded-xl mb-8 max-w-2xl w-full shadow-lg border-4 border-wrapped-cream">
+          <div className="flex flex-col gap-2 text-center">
+            <p className="text-2xl font-black uppercase tracking-tight">
+              ⚡ Local Scraper Fork ⚡
+            </p>
+            <p className="text-sm opacity-90">
+              This is a fork that lets you run the scraper locally and upload your data yourself.
+            </p>
+            <a
+              href="https://wrapped.isitzoe.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs opacity-75 hover:opacity-100 transition-opacity underline mt-1"
+            >
+              View the original version at wrapped.isitzoe.dev
+            </a>
+          </div>
+        </div>
         <h1 className="text-6xl font-black mb-8 tracking-tighter">
           HC Wrapped
         </h1>
@@ -113,14 +131,6 @@ export default function Home() {
           <p className="text-sm opacity-50 text-center">
             Log in with Hack Club Account
           </p>
-          <a
-            href="https://wrapped.isitzoe.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs opacity-30 hover:opacity-100 transition-opacity text-center mt-4"
-          >
-            Originally made by wrapped.isitzoe.dev
-          </a>
         </div>
       </div>
     );
