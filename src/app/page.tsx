@@ -97,10 +97,10 @@ export default function Home() {
   if (!authState?.authenticated) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-wrapped-black text-wrapped-cream p-4">
-        <div className="bg-wrapped-red text-wrapped-cream px-6 py-4 rounded-xl mb-8 max-w-2xl w-full shadow-lg border-4 border-wrapped-cream">
+        <div className="bg-wrapped-blue/20 text-wrapped-cream px-6 py-4 rounded-xl mb-8 max-w-2xl w-full border-2 border-wrapped-blue/40">
           <div className="flex flex-col gap-2 text-center">
-            <p className="text-2xl font-black uppercase tracking-tight">
-              ⚡ Local Scraper Fork ⚡
+            <p className="text-xl font-bold tracking-tight">
+              Local Scraper Fork
             </p>
             <p className="text-sm opacity-90">
               This is a fork that lets you run the scraper locally and upload your data yourself.
